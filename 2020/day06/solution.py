@@ -18,11 +18,11 @@ def get_groups():
 
 
 def part1(groups):
-    return sum([len(group[0].union(*group)) for group in groups])
+    return sum(len(group[0].union(*group)) for group in groups)
 
 
 def part2(groups):
-    return sum([len(group[0].intersection(*group)) for group in groups])
+    return sum(len(group[0].intersection(*group)) for group in groups)
 
 
 def main():
