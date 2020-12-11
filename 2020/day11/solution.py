@@ -6,15 +6,6 @@ def get_seat_layout():
         return [line.strip() for line in file]
 
 
-def count_occupied_seats(seat_layout):
-    count = 0
-    for row in seat_layout:
-        for seat in row:
-            if seat == '#':
-                count += 1
-    return count
-
-
 def count_adjacent_occupied_seats(seat_layout, row, seat):
     occupied_seats = 0
     for i in range(max(0, row - 1), min(row + 2, len(seat_layout))):
@@ -22,27 +13,6 @@ def count_adjacent_occupied_seats(seat_layout, row, seat):
             if (i != row or j != seat) and seat_layout[i][j] == '#':
                 occupied_seats += 1
     return occupied_seats
-
-
-def simulate_round_part1(seat_layout):
-    new_layout = []
-    for row in range(len(seat_layout)):
-        new_row = []
-        for seat in range(len(seat_layout[row])):
-            if seat_layout[row][seat] == 'L' and count_adjacent_occupied_seats(seat_layout, row, seat) == 0:
-                new_row.append('#')
-            elif seat_layout[row][seat] == '#' and count_adjacent_occupied_seats(seat_layout, row, seat) >= 4:
-                new_row.append('L')
-            else:
-                new_row.append(seat_layout[row][seat])
-        new_layout.append(new_row)
-    return new_layout
-
-
-def part1(seat_layout):
-    while (new_layout := simulate_round_part1(seat_layout)) != seat_layout:
-        seat_layout = new_layout
-    return count_occupied_seats(seat_layout)
 
 
 def count_visible_occupied_seats(seat_layout, row, seat):
@@ -112,14 +82,18 @@ def count_visible_occupied_seats(seat_layout, row, seat):
     return occupied_seats
 
 
-def simulate_round_part2(seat_layout):
+def simulate_round_part(seat_layout, tolerance, count_visible=False):
     new_layout = []
     for row in range(len(seat_layout)):
         new_row = []
         for seat in range(len(seat_layout[row])):
-            if seat_layout[row][seat] == 'L' and count_visible_occupied_seats(seat_layout, row, seat) == 0:
+            if not count_visible:
+                occupied_seats = count_adjacent_occupied_seats(seat_layout, row, seat)
+            else:
+                occupied_seats = count_visible_occupied_seats(seat_layout, row, seat)
+            if seat_layout[row][seat] == 'L' and occupied_seats == 0:
                 new_row.append('#')
-            elif seat_layout[row][seat] == '#' and count_visible_occupied_seats(seat_layout, row, seat) >= 5:
+            elif seat_layout[row][seat] == '#' and occupied_seats > tolerance:
                 new_row.append('L')
             else:
                 new_row.append(seat_layout[row][seat])
@@ -127,10 +101,25 @@ def simulate_round_part2(seat_layout):
     return new_layout
 
 
-def part2(seat_layout):
-    while (new_layout := simulate_round_part2(seat_layout)) != seat_layout:
+def count_all_occupied_seats(seat_layout):
+    count = 0
+    for row in seat_layout:
+        for seat in row:
+            if seat == '#':
+                count += 1
+    return count
+
+
+def part1(seat_layout):
+    while (new_layout := simulate_round_part(seat_layout, 3)) != seat_layout:
         seat_layout = new_layout
-    return count_occupied_seats(seat_layout)
+    return count_all_occupied_seats(seat_layout)
+
+
+def part2(seat_layout):
+    while (new_layout := simulate_round_part(seat_layout, 4, True)) != seat_layout:
+        seat_layout = new_layout
+    return count_all_occupied_seats(seat_layout)
 
 
 def main():
