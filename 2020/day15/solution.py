@@ -7,23 +7,19 @@ def get_numbers():
 
 
 def simulate_game(numbers, rounds):
-    number = numbers[-1]
-    occurrences = {numbers[i]: (i + 1, 0) for i in range(len(numbers))}
+    last_occurrence = {numbers[i]: i + 1 for i in range(len(numbers) - 1)}
+    last = numbers[-1]
 
-    for i in range(len(numbers) + 1, rounds + 1):
-        # compute ith number spoken
-        if occurrences[number][1] == 0:
-            number = 0
+    for round in range(len(numbers) + 1, rounds + 1):
+        if last not in last_occurrence:
+            current = 0
         else:
-            number = occurrences[number][0] - occurrences[number][1]
+            current = round - 1 - last_occurrence[last]
 
-        # update age of number
-        if number in occurrences:
-            occurrences[number] = (i, occurrences[number][0])
-        else:
-            occurrences[number] = (i, 0)
+        last_occurrence[last] = round - 1
+        last = current
 
-    return number
+    return last
 
 
 def part1(numbers):
