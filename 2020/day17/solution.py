@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from collections import defaultdict
 
 
 def parse_input():
@@ -7,50 +8,45 @@ def parse_input():
         for x, line in enumerate(file):
             for y, c in enumerate(line):
                 if c == '#':
-                    active_cubes.add((x, y, 0))
+                    active_cubes.add((x, y))
     return active_cubes
 
 
 def part1(active_cubes):
-    cubes = active_cubes.copy()
+    cubes = {(cube[0], cube[1], 0) for cube in active_cubes}
     for _ in range(6):
+        active_neighbors = defaultdict(int)
+        for x, y, z in cubes:
+            for x_off in [-1, 0, 1]:
+                for y_off in [-1, 0, 1]:
+                    for z_off in [-1, 0, 1]:
+                        neighbor = (x + x_off, y + y_off, z + z_off)
+                        if neighbor != (x, y, z):
+                            active_neighbors[neighbor] += 1
         new_cubes = set()
-        for x in range(min(cube[0] for cube in cubes) - 1, max(cube[0] for cube in cubes) + 2):
-            for y in range(min(cube[1] for cube in cubes) - 1, max(cube[1] for cube in cubes) + 2):
-                for z in range(min(cube[2] for cube in cubes) - 1, max(cube[2] for cube in cubes) + 2):
-                    current_cube = (x, y, z)
-                    active_neighbors = 0
-                    for x_off in [-1, 0, 1]:
-                        for y_off in [-1, 0, 1]:
-                            for z_off in [-1, 0, 1]:
-                                neighbor = (x + x_off, y + y_off, z + z_off)
-                                if neighbor != current_cube and neighbor in cubes:
-                                    active_neighbors += 1
-                    if current_cube in cubes and 1 < active_neighbors < 4 or current_cube not in cubes and active_neighbors == 3:
-                        new_cubes.add(current_cube)
+        for cube in active_neighbors:
+            if cube in cubes and 1 < active_neighbors[cube] < 4 or cube not in cubes and active_neighbors[cube] == 3:
+                new_cubes.add(cube)
         cubes = new_cubes
     return len(cubes)
 
 
 def part2(active_cubes):
-    cubes = {(cube[0], cube[1], cube[2], 0) for cube in active_cubes}
+    cubes = {(cube[0], cube[1], 0, 0) for cube in active_cubes}
     for _ in range(6):
+        active_neighbors = defaultdict(int)
+        for x, y, z, w in cubes:
+            for x_off in [-1, 0, 1]:
+                for y_off in [-1, 0, 1]:
+                    for z_off in [-1, 0, 1]:
+                        for w_off in [-1, 0, 1]:
+                            neighbor = (x + x_off, y + y_off, z + z_off, w + w_off)
+                            if neighbor != (x, y, z, w):
+                                active_neighbors[neighbor] += 1
         new_cubes = set()
-        for x in range(min(cube[0] for cube in cubes) - 1, max(cube[0] for cube in cubes) + 2):
-            for y in range(min(cube[1] for cube in cubes) - 1, max(cube[1] for cube in cubes) + 2):
-                for z in range(min(cube[2] for cube in cubes) - 1, max(cube[2] for cube in cubes) + 2):
-                    for w in range(min(cube[3] for cube in cubes) - 1, max(cube[3] for cube in cubes) + 2):
-                        current_cube = (x, y, z, w)
-                        active_neighbors = 0
-                        for x_off in [-1, 0, 1]:
-                            for y_off in [-1, 0, 1]:
-                                for z_off in [-1, 0, 1]:
-                                    for w_off in [-1, 0, 1]:
-                                        neighbor = (x + x_off, y + y_off, z + z_off, w + w_off)
-                                        if neighbor != current_cube and neighbor in cubes:
-                                            active_neighbors += 1
-                        if current_cube in cubes and 1 < active_neighbors < 4 or current_cube not in cubes and active_neighbors == 3:
-                            new_cubes.add(current_cube)
+        for cube in active_neighbors:
+            if cube in cubes and 1 < active_neighbors[cube] < 4 or cube not in cubes and active_neighbors[cube] == 3:
+                new_cubes.add(cube)
         cubes = new_cubes
     return len(cubes)
 
