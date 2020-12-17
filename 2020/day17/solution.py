@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from collections import defaultdict
+from itertools import product
+from operator import add
 
 
 def parse_input():
@@ -12,43 +14,32 @@ def parse_input():
     return active_cubes
 
 
-def part1(active_cubes):
-    cubes = {(cube[0], cube[1], 0) for cube in active_cubes}
-    for _ in range(6):
+def get_neighbors(cube):
+    return [tuple(map(add, cube, offset)) for offset in product(range(-1, 2), repeat=len(cube)) if any(offset)]
+
+
+def simulate_rounds(cubes, rounds=6):
+    for _ in range(rounds):
         active_neighbors = defaultdict(int)
-        for x, y, z in cubes:
-            for x_off in [-1, 0, 1]:
-                for y_off in [-1, 0, 1]:
-                    for z_off in [-1, 0, 1]:
-                        neighbor = (x + x_off, y + y_off, z + z_off)
-                        if neighbor != (x, y, z):
-                            active_neighbors[neighbor] += 1
+        for cube in cubes:
+            for neighbor in get_neighbors(cube):
+                active_neighbors[neighbor] += 1
         new_cubes = set()
         for cube in active_neighbors:
             if cube in cubes and 1 < active_neighbors[cube] < 4 or cube not in cubes and active_neighbors[cube] == 3:
                 new_cubes.add(cube)
         cubes = new_cubes
     return len(cubes)
+
+
+def part1(active_cubes):
+    cubes = {(cube[0], cube[1], 0) for cube in active_cubes}
+    return simulate_rounds(cubes)
 
 
 def part2(active_cubes):
     cubes = {(cube[0], cube[1], 0, 0) for cube in active_cubes}
-    for _ in range(6):
-        active_neighbors = defaultdict(int)
-        for x, y, z, w in cubes:
-            for x_off in [-1, 0, 1]:
-                for y_off in [-1, 0, 1]:
-                    for z_off in [-1, 0, 1]:
-                        for w_off in [-1, 0, 1]:
-                            neighbor = (x + x_off, y + y_off, z + z_off, w + w_off)
-                            if neighbor != (x, y, z, w):
-                                active_neighbors[neighbor] += 1
-        new_cubes = set()
-        for cube in active_neighbors:
-            if cube in cubes and 1 < active_neighbors[cube] < 4 or cube not in cubes and active_neighbors[cube] == 3:
-                new_cubes.add(cube)
-        cubes = new_cubes
-    return len(cubes)
+    return simulate_rounds(cubes)
 
 
 def main():
