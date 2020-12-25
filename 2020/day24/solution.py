@@ -7,23 +7,19 @@ def parse_input():
     with open('input') as file:
         for line in file:
             current = line.strip()
-            tile = [0, 0, 0]
+            tile = [0, 0]
             while current:
                 if current.startswith('e'):
                     tile[0] += 1
-                    tile[2] -= 1
                     current = current[1:]
                 elif current.startswith('w'):
                     tile[0] -= 1
-                    tile[2] += 1
                     current = current[1:]
                 elif current.startswith('se'):
                     tile[1] += 1
-                    tile[2] -= 1
                     current = current[2:]
                 elif current.startswith('nw'):
                     tile[1] -= 1
-                    tile[2] += 1
                     current = current[2:]
                 elif current.startswith('sw'):
                     tile[0] -= 1
@@ -51,12 +47,12 @@ def simulate_flipping(tiles, rounds=100):
     for _ in range(rounds):
         neighbor_count = defaultdict(int)
         for tile in tiles:
-            neighbor_count[tuple([tile[0] - 1, tile[1], tile[2] + 1])] += 1
-            neighbor_count[tuple([tile[0] + 1, tile[1], tile[2] - 1])] += 1
-            neighbor_count[tuple([tile[0], tile[1] - 1, tile[2] + 1])] += 1
-            neighbor_count[tuple([tile[0], tile[1] + 1, tile[2] - 1])] += 1
-            neighbor_count[tuple([tile[0] - 1, tile[1] + 1, tile[2]])] += 1
-            neighbor_count[tuple([tile[0] + 1, tile[1] - 1, tile[2]])] += 1
+            neighbor_count[tuple([tile[0] - 1, tile[1]])] += 1
+            neighbor_count[tuple([tile[0] + 1, tile[1]])] += 1
+            neighbor_count[tuple([tile[0], tile[1] - 1])] += 1
+            neighbor_count[tuple([tile[0], tile[1] + 1])] += 1
+            neighbor_count[tuple([tile[0] - 1, tile[1] + 1])] += 1
+            neighbor_count[tuple([tile[0] + 1, tile[1] - 1])] += 1
         new_tiles = set()
         for tile in neighbor_count:
             if tile in tiles and 1 <= neighbor_count[tile] <= 2:
